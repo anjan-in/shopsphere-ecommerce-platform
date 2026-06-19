@@ -1,110 +1,73 @@
-# shopsphere-ecommerce-platform
+# React + TypeScript + Vite
 
-ShopSphere is a production-grade E-Commerce Platform built with React, TypeScript, Redux Toolkit, Firebase, Tailwind CSS, and Stripe/Razorpay. Its supports authentication, product management, cart, wishlist, orders, payments, reviews, analytics, and admin operations.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Features:
+Currently, two official plugins are available:
 
-• Authentication & Social Login
-• Product Catalog & Search
-• Shopping Cart & Wishlist
-• Secure Checkout
-• Payment Gateway Integration
-• Order Tracking
-• Product Reviews & Ratings
-• Admin Dashboard
-• Sales Analytics
-• Responsive Design
-• Lazy Loading & Code Splitting
-• Protected Routes
-• Performance Optimization
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## GitHub Topics
+## React Compiler
 
-- react
-- typescript
-- redux-toolkit
-- firebase
-- tailwindcss
-- stripe
-- razorpay
-- ecommerce
-- shopping-cart
-- admin-dashboard
-- frontend
-- fullstack
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## High-Level Architecture
+## Expanding the ESLint configuration
 
-┌─────────────────────┐
-│ React Frontend │
-└──────────┬──────────┘
-│
-▼
-┌─────────────────────┐
-│ Redux Toolkit │
-│ Global State │
-└──────────┬──────────┘
-│
-▼
-┌─────────────────────┐
-│ Firebase Services │
-│ │
-│ Auth │
-│ Firestore │
-│ Storage │
-│ Cloud Functions │
-└──────────┬──────────┘
-│
-▼
-┌─────────────────────┐
-│ Payment Gateway │
-│ Stripe/Razorpay │
-└──────────┬──────────┘
-│
-▼
-┌─────────────────────┐
-│ Admin Dashboard │
-└─────────────────────┘
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-## Complete Architecture
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-## (Frontend Layer)
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-- React
-- TypeScript
-- Redux Toolkit
-- React Router
-- Tailwind CSS
-- React Hook Form
-- Yup Validation
-- Axios
-- React Query (Optional)
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
 
-## (Backend Layer)
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-# Firebase
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-- Firebase Auth
-- Firestore
-- Firebase Storage
-- Cloud Functions
-- Firebase Hosting
-
-# Payment Layer
-
-- Stripe or Razorpay
-
-## State Management (Redux Toolkit):
-
-# Slices:
-
-- authSlice
-- productSlice
-- cartSlice
-- wishlistSlice
-- orderSlice
-- reviewSlice
-- adminSlice
-- analyticsSlice
-
-Designed using scalable architecture and enterprise-grade development practices.
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
