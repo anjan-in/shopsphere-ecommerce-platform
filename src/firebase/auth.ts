@@ -1,10 +1,8 @@
-import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signOut
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, 
+  signOut, GoogleAuthProvider, signInWithPopup
 } from 'firebase/auth';
 import type { User } from 'firebase/auth';
-import { auth } from './firebaseConfig';
+import { auth, db } from './firebaseConfig';
 
 // Register User
 export const registerUser = async (email: string, pass: string): Promise<User> => {
@@ -22,3 +20,10 @@ export const loginUser = async (email: string, pass: string): Promise<User> => {
 export const logoutUser = async (): Promise<void> => {
   await signOut(auth);
 };
+
+// Google Sign-In
+export const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
+
+// Sign in with Google
+export { auth, db };
