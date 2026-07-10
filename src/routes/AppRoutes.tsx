@@ -4,7 +4,8 @@ import AuthLayout from '../layouts/AuthLayout';
 import AdminLayout from '../layouts/AdminLayout';
 
 // Import your page components here...
-import Home from '../pages/Home';
+import HomePage from '../pages/Home';
+import ProductsPage from '../pages/Products';
 import Login from '../pages/Login';
 
 const router = createBrowserRouter([
@@ -13,10 +14,12 @@ const router = createBrowserRouter([
     path: '/',
     element: <MainLayout />,
     children: [
-      { path: '', element: <Home /> },
-      // { path: 'products', element: <Products /> },
+      { path: '', element: <HomePage /> },
+      { 
+        path: 'products', 
+        element: <ProductsPage /> 
+      },
       // { path: 'product/:id', element: <ProductDetails /> },
-      // Wrap protected user screens under a ProtectedRoute guard component later:
       // { path: 'cart', element: <Cart /> },
     ],
   },
