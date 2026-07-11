@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import type { Product } from '../../types/product.types';
 import { useAuth } from '../../hooks/useAuth';
-import { FaRegHeart, FaHeart, FaEye, FaShoppingCart } from 'react-icons/fa';
+import { FaRegHeart, FaEye, FaShoppingCart } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
 interface ProductCardProps {

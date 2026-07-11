@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useProducts } from '../../hooks/useProducts';
 import ProductGrid from '../../components/product/ProductGrid';
