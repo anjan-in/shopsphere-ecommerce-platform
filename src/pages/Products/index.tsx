@@ -1,113 +1,74 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { useProducts } from '../../hooks/useProducts';
-import ProductGrid from '../../components/product/ProductGrid';
-import { setSearchQuery, setSorting, setFilters, clearFilters } from '../../redux/slices/productSlice';
-import type { ProductSortOption } from '../../types/product.types';
+import ProductCard from '../../components/product/ProductCard';
 
-export default function ProductsPage() {
-  const dispatch = useDispatch();
-  const { products, loading, searchQuery, sortOption, filters, categories, loadCatalog, loadCategories } = useProducts();
+export default function HomePage() {
+  const { featuredProducts, categories, loading, error, loadFeatured, loadCategories } = useProducts();
 
   useEffect(() => {
+    console.log('Fetching homepage data...');
+    loadFeatured();
     loadCategories();
-  }, [loadCategories]);
+  }, [loadFeatured, loadCategories]);
 
-  useEffect(() => {
-    loadCatalog();
-  }, [loadCatalog]);
+  console.log('Current Featured Products State:', featuredProducts);
+  console.log('Current Categories State:', categories);
+  console.log('Loading State:', loading);
+  console.log('Error State:', error);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-      <div className="flex flex-col gap-6 lg:flex-row">
-        
-        {/* 1. Filter Control Sidebar Options Panel Layout */}
-        <aside className="w-full shrink-0 lg:w-64 space-y-6 rounded-xl border bg-white p-5 shadow-xs h-fit">
-          <div className="flex items-center justify-between border-b pb-3">
-            <h2 className="text-base font-bold text-slate-900">Filters</h2>
-            <button 
-              onClick={() => dispatch(clearFilters())}
-              className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline"
-            >
-              Clear All
-            </button>
+    <div className="space-y-12 pb-12">
+      {/* 1. Hero Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 p-8 text-white shadow-lg sm:p-12">
+        <div className="max-w-xl space-y-4">
+          <span className="text-xs font-bold uppercase tracking-widest text-blue-200">Welcome to ShopSphere</span>
+          <h1 className="text-3xl font-extrabold sm:text-5xl">Next-Gen Shopping Experience</h1>
+          <p className="text-sm text-blue-100">Explore curated electronics, fashion, and home essentials with instant checkout.</p>
+          <div className="pt-2">
+            <Link to="/products" className="inline-block rounded-lg bg-white px-6 py-3 text-sm font-bold text-blue-600 shadow-sm transition hover:bg-blue-50">
+              Browse Catalog
+            </Link>
           </div>
-
-          {/* Categorical Filtering Lists */}
-          <div className="space-y-2">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Categories</h3>
-            <div className="flex flex-wrap gap-2 lg:flex-col lg:gap-1">
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => dispatch(setFilters({ category: filters.category === cat.id ? undefined : cat.id }))}
-                  className={`rounded-md px-3 py-1.5 text-left text-xs font-medium transition-colors w-max lg:w-full ${
-                    filters.category === cat.id 
-                      ? 'bg-blue-50 text-blue-600' 
-                      : 'text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  {cat.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Budget Ceiling Controls Range */}
-          <div className="space-y-2 pt-4 border-t">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Price Ceiling</h3>
-            <input
-              type="range"
-              min="0"
-              max="1000"
-              step="50"
-              value={filters.maxPrice || 1000}
-              onChange={(e) => dispatch(setFilters({ maxPrice: Number(e.target.value) }))}
-              className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-            />
-            <div className="flex items-center justify-between text-xs font-medium text-slate-500">
-              <span>$0</span>
-              <span className="text-slate-800 font-semibold">Max: ${filters.maxPrice || 1000}</span>
-            </div>
-          </div>
-        </aside>
-
-        {/* 2. Main Catalog Grid Presentation Core Layout Area */}
-        <main className="flex-1 space-y-6">
-          
-          {/* Top Bar Searching, Sorting & Controls Hub */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-xl border bg-white p-4 shadow-xs">
-            <div className="relative w-full sm:max-w-xs">
-              <input
-                type="text"
-                placeholder="Search items..."
-                value={searchQuery}
-                onChange={(e) => dispatch(setSearchQuery(e.target.value))}
-                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-sm transition focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            
-            <div className="flex items-center justify-end">
-              <select
-                value={sortOption}
-                onChange={(e) => dispatch(setSorting(e.target.value as ProductSortOption))}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-xs transition focus:border-blue-500 focus:outline-none"
-              >
-                <option value="newest">Sort By: Newest</option>
-                <option value="price-low-high">Price: Low to High</option>
-                <option value="price-high-low">Price: High to Low</option>
-                <option value="rating">Top Rated</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Dynamic Grid Mount Point 
-              Breakpoints are managed elegantly inside the ProductGrid container:
-              Mobile: grid-cols-1 | Tablet: sm:grid-cols-2 / md:grid-cols-3 | Desktop: lg:grid-cols-4 
-          */}
-          <ProductGrid products={products} loading={loading} />
-        </main>
+        </div>
       </div>
+
+      {/* 2. Top Categories */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-bold text-slate-900">Top Categories</h2>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6">
+          {categories.map((cat) => (
+            <Link key={cat.id} to={`/products?category=${cat.id}`} className="group rounded-xl border bg-white p-4 text-center transition hover:shadow-md">
+              <div className="mx-auto h-12 w-12 overflow-hidden rounded-full bg-slate-100">
+                <img src={cat.image} alt={cat.name} className="h-full w-full object-cover transition group-hover:scale-110" />
+              </div>
+              <h3 className="mt-2 text-xs font-semibold text-slate-700">{cat.name}</h3>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* 3. Featured Products */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold text-slate-900">Featured Products</h2>
+          <Link to="/products" className="text-xs font-semibold text-blue-600 hover:underline">View All →</Link>
+        </div>
+        
+        {loading ? (
+          <p className="text-sm text-slate-500">Loading catalog from Firestore...</p>
+        ) : featuredProducts.length === 0 ? (
+          <div className="p-8 border border-dashed rounded-lg text-center text-slate-400">
+            No featured products returned yet. Check console logs.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
