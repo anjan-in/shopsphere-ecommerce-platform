@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useProducts } from '../../hooks/useProducts';
+import { useCart } from '../../hooks/useCart'; // 1. Import useCart
 import { FaShoppingCart, FaHeart } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
 export default function ProductDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const { selectedProduct, loading, loadProductDetails } = useProducts();
+  const { addItem } = useCart(); // 2. Extract addItem
   const [activeImage, setActiveImage] = useState<string>('');
 
   useEffect(() => {
@@ -26,11 +28,15 @@ export default function ProductDetailsPage() {
 
   const hasDiscount = selectedProduct.discountPrice && selectedProduct.discountPrice < selectedProduct.price;
 
+  const handleAddToCart = () => {
+    addItem(selectedProduct);
+    toast.success(`Added ${selectedProduct.title} to cart!`);
+  };
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start">
-        
-        {/* Gallery Interface System */}
+        {/* Gallery */}
         <div className="flex flex-col-reverse gap-4 md:flex-row">
           <div className="flex flex-row gap-2 overflow-x-auto md:flex-col md:overflow-x-visible shrink-0">
             {selectedProduct.images?.map((img, idx) => (
@@ -51,7 +57,7 @@ export default function ProductDetailsPage() {
           </div>
         </div>
 
-        {/* Product Information Column */}
+        {/* Product Meta */}
         <div className="flex flex-col space-y-6">
           <div>
             <span className="text-xs font-bold uppercase tracking-widest text-blue-600">{selectedProduct.brand}</span>
@@ -76,7 +82,6 @@ export default function ProductDetailsPage() {
 
           <p className="text-sm text-slate-600 leading-relaxed">{selectedProduct.description}</p>
 
-          {/* Sticky Purchase Card Mock Actions */}
           <div className="rounded-xl border bg-slate-50 p-4 space-y-4">
             <div className="flex items-center justify-between text-xs font-medium text-slate-500">
               <span>Availability Status</span>
@@ -87,7 +92,7 @@ export default function ProductDetailsPage() {
 
             <div className="flex flex-col gap-2 sm:flex-row">
               <button
-                onClick={() => toast.success('Added to basket!')}
+                onClick={handleAddToCart}
                 disabled={selectedProduct.stock === 0}
                 className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-600 py-3 text-sm font-bold text-white shadow-xs transition hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400"
               >
@@ -104,14 +109,6 @@ export default function ProductDetailsPage() {
           </div>
         </div>
       </div>
-
-      {/* Customer Reviews Section */}
-      <section className="mt-16 border-t pt-8 space-y-6">
-        <h2 className="text-xl font-bold text-slate-900">Customer Feedback Reviews</h2>
-        <div className="rounded-xl border p-6 text-center text-sm text-slate-400 bg-white">
-          No feedback entries verified yet for this SKU stock selection block.
-        </div>
-      </section>
     </div>
   );
 }
