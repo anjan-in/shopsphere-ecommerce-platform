@@ -11,6 +11,9 @@ import CartPage from '../pages/Cart/index';
 import CheckoutPage from '../pages/Checkout/index';
 import OrderSuccessPage from '../pages/OrderSuccess/index';
 import Login from '../pages/Login';
+import ProtectedRoute from './ProtectedRoute';
+import ProfilePage from '../pages/Profile/index';
+import OrderHistoryPage from '../pages/Orders/index';
 
 const router = createBrowserRouter([
   {
@@ -35,12 +38,32 @@ const router = createBrowserRouter([
       },
       { 
         path: 'checkout', 
-        element: <CheckoutPage /> 
+        element: (
+          <ProtectedRoute>
+            <CheckoutPage />
+          </ProtectedRoute>
+        ) 
       },
       { 
         path: 'order-success/:id', 
         element: <OrderSuccessPage /> 
-      }
+      },
+      { 
+        path: 'profile', 
+        element: (
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        ) 
+      },
+      { 
+        path: 'orders', 
+        element: (
+          <ProtectedRoute>
+            <OrderHistoryPage />
+          </ProtectedRoute>
+        ) 
+      },
     ],
   },
   {
