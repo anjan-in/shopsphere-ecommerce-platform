@@ -10,7 +10,7 @@ import ProductDetailsPage from '../pages/ProductDetails/index';
 import CartPage from '../pages/Cart/index';
 import CheckoutPage from '../pages/Checkout/index';
 import OrderSuccessPage from '../pages/OrderSuccess/index';
-import Login from '../pages/Login';
+import Login from '../pages/Login/index';
 import ProtectedRoute from './ProtectedRoute';
 import ProfilePage from '../pages/Profile/index';
 import OrderHistoryPage from '../pages/Orders/index';
