@@ -1,7 +1,8 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute';
 import MainLayout from '../layouts/MainLayout';
 import AuthLayout from '../layouts/AuthLayout';
-// import AdminLayout from '../layouts/AdminLayout';
+import AdminLayout from '../layouts/AdminLayout';
 
 // Core Page Imports
 import HomePage from '../pages/Home/index';
@@ -11,9 +12,10 @@ import CartPage from '../pages/Cart/index';
 import CheckoutPage from '../pages/Checkout/index';
 import OrderSuccessPage from '../pages/OrderSuccess/index';
 import Login from '../pages/Login/index';
-import ProtectedRoute from './ProtectedRoute';
 import ProfilePage from '../pages/Profile/index';
 import OrderHistoryPage from '../pages/Orders/index';
+import AdminDashboard from '../pages/Admin/Dashboard/index';
+import ManageProductsPage from '../pages/Admin/ManageProducts/index';
 
 const router = createBrowserRouter([
   {
@@ -73,6 +75,14 @@ const router = createBrowserRouter([
       { path: 'login', element: <Login /> },
     ],
   },
+  {
+    path: '/admin',
+    element: <AdminLayout />,
+    children: [
+      { path: '', element: <AdminDashboard /> },
+      { path: 'products', element: <ManageProductsPage /> },
+    ],
+  }
 ]);
 
 export default function AppRoutes() {
