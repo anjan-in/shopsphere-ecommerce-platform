@@ -72,11 +72,11 @@ export default function ProductDetailsPage() {
           <div className="border-t border-b py-4 flex items-baseline gap-3">
             {hasDiscount ? (
               <>
-                <span className="text-3xl font-black text-slate-900">${selectedProduct.discountPrice}</span>
-                <span className="text-base text-slate-400 line-through">${selectedProduct.price}</span>
+                <span className="text-3xl font-black text-slate-900">₹{selectedProduct.discountPrice}</span>
+                <span className="text-base text-slate-400 line-through">₹{selectedProduct.price}</span>
               </>
             ) : (
-              <span className="text-3xl font-black text-slate-900">${selectedProduct.price}</span>
+              <span className="text-3xl font-black text-slate-900">₹{selectedProduct.price}</span>
             )}
           </div>
 

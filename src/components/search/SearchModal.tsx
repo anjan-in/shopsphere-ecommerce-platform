@@ -108,7 +108,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-xs font-extrabold text-slate-900">${p.discountPrice ?? p.price}</span>
+                      <span className="text-xs font-extrabold text-slate-900">₹{p.discountPrice ?? p.price}</span>
                       <FaArrowRight className="h-3 w-3 text-slate-300 group-hover:text-blue-600 transition" />
                     </div>
                   </div>

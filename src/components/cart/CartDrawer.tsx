@@ -92,7 +92,7 @@ export default function CartDrawer() {
                             +
                           </button>
                         </div>
-                        <span className="text-sm font-bold text-slate-900">${(price * quantity).toFixed(2)}</span>
+                        <span className="text-sm font-bold text-slate-900">₹{(price * quantity).toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
@@ -107,21 +107,21 @@ export default function CartDrawer() {
               <div className="space-y-1 text-xs text-slate-600">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-semibold text-slate-800">${summary.subtotal.toFixed(2)}</span>
+                  <span className="font-semibold text-slate-800">₹{summary.subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Estimated Tax (8%)</span>
-                  <span className="font-semibold text-slate-800">${summary.tax.toFixed(2)}</span>
+                  <span className="font-semibold text-slate-800">₹{summary.tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
                   <span className="font-semibold text-slate-800">
-                    {summary.shipping === 0 ? 'FREE' : `$${summary.shipping.toFixed(2)}`}
+                    {summary.shipping === 0 ? 'FREE' : `₹${summary.shipping.toFixed(2)}`}
                   </span>
                 </div>
                 <div className="flex justify-between pt-2 border-t text-sm font-bold text-slate-900">
                   <span>Total</span>
-                  <span className="text-blue-600">${summary.total.toFixed(2)}</span>
+                  <span className="text-blue-600">₹{summary.total.toFixed(2)}</span>
                 </div>
               </div>
 

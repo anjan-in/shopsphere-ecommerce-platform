@@ -91,18 +91,18 @@ export default function ProductCard({ product }: ProductCardProps) {
         </h3>
 
         <div className="mt-2 flex items-center gap-1 text-xs text-amber-400">
-          <div className="flex">{'★'.repeat(Math.round(product.rating))}${'☆'.repeat(5 - Math.round(product.rating))}</div>
+          <div className="flex">{'★'.repeat(Math.round(product.rating))}{'☆'.repeat(5 - Math.round(product.rating))}</div>
           <span className="text-slate-400 font-medium">({product.totalReviews})</span>
         </div>
 
         <div className="mt-4 flex items-baseline gap-2">
           {hasDiscount ? (
             <>
-              <span className="text-lg font-bold text-slate-900">${product.discountPrice}</span>
-              <span className="text-xs text-slate-400 line-through">${product.price}</span>
+              <span className="text-lg font-bold text-slate-900">₹{product.discountPrice}</span>
+              <span className="text-xs text-slate-400 line-through">₹{product.price}</span>
             </>
           ) : (
-            <span className="text-lg font-bold text-slate-900">${product.price}</span>
+            <span className="text-lg font-bold text-slate-900">₹{product.price}</span>
           )}
         </div>
 
