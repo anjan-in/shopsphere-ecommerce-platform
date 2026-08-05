@@ -37,7 +37,7 @@ const cartSlice = createSlice({
       }
 
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state.items));
-      state.isOpen = true; // Auto open cart drawer on addition
+      // state.isOpen = true; // Auto open cart drawer on addition
     },
 
     removeFromCart: (state, action: PayloadAction<string>) => {
