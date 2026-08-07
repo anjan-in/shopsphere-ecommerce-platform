@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProducts } from '../../hooks/useProducts';
-import { FaSearch, FaTimes, FaFire, FaArrowRight } from 'react-icons/fa';
+import { Search, X, Flame, ArrowRight } from 'lucide-react';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -16,7 +16,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
   const trendingSearches = ['Headphones', 'Smartwatch', 'Wireless', 'Ergonomic', 'USB-C'];
 
-  // Filter matching products dynamically
   const filteredProducts = query.trim() === '' 
     ? [] 
     : products.filter(p => 
@@ -24,7 +23,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         p.brand.toLowerCase().includes(query.toLowerCase())
       ).slice(0, 5);
 
-  // Close modal on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -39,7 +37,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-slate-900/40 backdrop-blur-sm">
         
-        {/* Backdrop click to close */}
         <div className="fixed inset-0" onClick={onClose} />
 
         <motion.div
@@ -49,9 +46,9 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           transition={{ duration: 0.15 }}
           className="relative z-10 w-full max-w-xl overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-soft-lg backdrop-blur-xl"
         >
-          {/* Input Header */}
+          {/* Header */}
           <div className="relative flex items-center border-b border-slate-200/80 pb-3">
-            <FaSearch className="absolute left-3.5 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3.5 h-4 w-4 text-slate-400" />
             <input
               type="text"
               autoFocus
@@ -62,19 +59,19 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
             />
             {query ? (
               <button onClick={() => setQuery('')} className="p-1 text-slate-400 hover:text-slate-600">
-                <FaTimes className="h-3.5 w-3.5" />
+                <X className="h-4 w-4" />
               </button>
             ) : (
               <kbd className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-400">ESC</kbd>
             )}
           </div>
 
-          {/* Results Container */}
+          {/* Results */}
           <div className="mt-4 max-h-80 overflow-y-auto space-y-4">
             {query.trim() === '' ? (
               <div className="space-y-2 px-2 py-2">
                 <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                  <FaFire className="text-amber-500" /> Trending Searches
+                  <Flame className="h-3.5 w-3.5 text-amber-500" /> Trending Searches
                 </div>
                 <div className="flex flex-wrap gap-2 pt-1">
                   {trendingSearches.map((term) => (
@@ -108,8 +105,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-xs font-extrabold text-slate-900">₹{p.discountPrice ?? p.price}</span>
-                      <FaArrowRight className="h-3 w-3 text-slate-300 group-hover:text-blue-600 transition" />
+                      <span className="text-xs font-extrabold text-slate-900">${p.discountPrice ?? p.price}</span>
+                      <ArrowRight className="h-3.5 w-3.5 text-slate-300 group-hover:text-blue-600 transition" />
                     </div>
                   </div>
                 ))}
