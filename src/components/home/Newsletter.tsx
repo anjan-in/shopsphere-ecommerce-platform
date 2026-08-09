@@ -1,4 +1,3 @@
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
@@ -6,7 +5,7 @@ export default function Newsletter() {
   const { register, handleSubmit, reset } = useForm<{ email: string }>();
 
   const onSubmit = (data: { email: string }) => {
-    toast.success('Thank you for subscribing!');
+    toast.success(`Thank you for subscribing (${data.email})!`);
     reset();
   };
 

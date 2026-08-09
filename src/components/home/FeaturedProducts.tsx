@@ -1,13 +1,11 @@
-import React, { useEffect } from 'react';
 import { useProducts } from '../../hooks/useProducts';
 import ProductGrid from '../product/ProductGrid';
 
 export default function FeaturedProducts() {
-  const { featuredProducts, loading, loadFeatured } = useProducts();
+  const { products, loading } = useProducts();
 
-  useEffect(() => {
-    loadFeatured();
-  }, [loadFeatured]);
+  // Filter products for featured items
+  const featuredProducts = products.filter((p) => p.featured);
 
   return (
     <section className="space-y-4">
