@@ -1,14 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useProducts } from '../../hooks/useProducts';
+import { productService } from '../../services/productService';
 import type { Category } from '../../types/product.types';
 
 export default function TopCategories() {
-  const { categories, loadCategories } = useProducts();
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    loadCategories();
-  }, [loadCategories]);
+    productService.getCategories().then((data) => {
+      setCategories(data);
+    });
+  }, []);
 
   return (
     <section className="space-y-4">
