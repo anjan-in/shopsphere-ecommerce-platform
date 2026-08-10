@@ -1,56 +1,61 @@
 import { db } from '../firebase/firebaseConfig';
 import { 
   collection, 
-  query, 
-  where, 
-  limit, 
   getDocs, 
   doc, 
   getDoc,
-  startAfter,
-  QueryDocumentSnapshot,
-  QueryConstraint
 } from 'firebase/firestore';
 import type { Product, Category, ProductFilters, ProductSortOption } from '../types/product.types';
 
 export const productService = {
-  // 1. Fetch Products (with filtering, sorting & search)
+  // 1. Fetch All Products safely from Firestore
   async getProducts(filters?: ProductFilters, sort?: ProductSortOption, search?: string): Promise<Product[]> {
-    const productsRef = collection(db, 'products');
-    const constraints: QueryConstraint[] = [where('isActive', '==', true)];
+    const querySnapshot = await getDocs(collection(db, 'products'));
+    
+    let results = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Product[];
 
-    if (filters?.category) {
-      constraints.push(where('categoryId', '==', filters.category));
+    // Filter inactive products only if explicitly set to false
+    results = results.filter((p) => p.isActive !== false);
+
+    // Filter by Category
+    if (filters?.category && filters.category !== 'all') {
+      results = results.filter((p) => p.categoryId?.toLowerCase() === filters.category?.toLowerCase());
     }
 
-    const q = query(productsRef, ...constraints);
-    const querySnapshot = await getDocs(q);
-    let results = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+    // Filter by Brand
+    if (filters?.brand && filters.brand !== 'all') {
+      results = results.filter((p) => p.brand?.toLowerCase() === filters.brand?.toLowerCase());
+    }
 
-    // Handle search query filtering in-memory
-    if (search) {
+    // Search filter (Safely handle missing titles or descriptions)
+    if (search && search.trim() !== '') {
       const searchLower = search.toLowerCase();
-      results = results.filter(p => 
-        p.title.toLowerCase().includes(searchLower) || 
-        p.description.toLowerCase().includes(searchLower)
-      );
+      results = results.filter((p) => {
+        const title = p.title?.toLowerCase() || '';
+        const brand = p.brand?.toLowerCase() || '';
+        const desc = p.description?.toLowerCase() || '';
+        return title.includes(searchLower) || brand.includes(searchLower) || desc.includes(searchLower);
+      });
     }
 
-    // Use the `sort` parameter to sort items in-memory
+    // Sorting Logic
     if (sort) {
       switch (sort) {
         case 'price-low-high':
-          results.sort((a, b) => (a.discountPrice ?? a.price) - (b.discountPrice ?? b.price));
+          results.sort((a, b) => (a.discountPrice || a.price) - (b.discountPrice || b.price));
           break;
         case 'price-high-low':
-          results.sort((a, b) => (b.discountPrice ?? b.price) - (a.discountPrice ?? a.price));
+          results.sort((a, b) => (b.discountPrice || b.price) - (a.discountPrice || a.price));
           break;
         case 'rating':
-          results.sort((a, b) => b.rating - a.rating);
+          results.sort((a, b) => (b.rating || 0) - (a.rating || 0));
           break;
         case 'newest':
         default:
-          results.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          results.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
           break;
       }
     }
@@ -58,7 +63,7 @@ export const productService = {
     return results;
   },
 
-  // 2. Fetch Single Product Details
+  // 2. Fetch Single Product
   async getProductById(productId: string): Promise<Product | null> {
     const docRef = doc(db, 'products', productId);
     const docSnap = await getDoc(docRef);
@@ -67,46 +72,14 @@ export const productService = {
 
   // 3. Fetch Featured Products for Homepage
   async getFeaturedProducts(): Promise<Product[]> {
-    const q = query(
-      collection(db, 'products'), 
-      where('featured', '==', true), 
-      where('isActive', '==', true), 
-      limit(8)
-    );
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+    const querySnapshot = await getDocs(collection(db, 'products'));
+    const all = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Product));
+    return all.filter((p) => p.featured && p.isActive !== false).slice(0, 8);
   },
 
-  // 4. Fetch All Categories for Homepage & Filters
+  // 4. Fetch Categories
   async getCategories(): Promise<Category[]> {
-    const q = query(collection(db, 'categories'), where('isActive', '==', true));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Category));
-  },
-
-  // 5. Paginated Products Cursor Method
-  async getPaginatedProducts(
-    filters: ProductFilters, 
-    sort: ProductSortOption, 
-    lastDoc: QueryDocumentSnapshot | null, 
-    pageSize: number = 12
-  ) {
-    const productsRef = collection(db, 'products');
-    const constraints: QueryConstraint[] = [where('isActive', '==', true)];
-
-    if (filters.category) constraints.push(where('categoryId', '==', filters.category));
-    if (filters.brand) constraints.push(where('brand', '==', filters.brand));
-    
-    if (lastDoc) constraints.push(startAfter(lastDoc));
-    constraints.push(limit(pageSize));
-
-    const q = query(productsRef, ...constraints);
-    const querySnapshot = await getDocs(q);
-    
-    const products = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
-    return {
-      products,
-      lastVisible: querySnapshot.docs[querySnapshot.docs.length - 1] || null
-    };
+    const querySnapshot = await getDocs(collection(db, 'categories'));
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Category));
   }
 };
