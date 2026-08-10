@@ -1,119 +1,116 @@
-import React from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import type { Product } from '../../types/product.types';
-import { useAuth } from '../../hooks/useAuth';
-import { useCart } from '../../hooks/useCart'; // 1. Import useCart
-import { FaRegHeart, FaEye, FaShoppingCart } from 'react-icons/fa';
-import toast from 'react-hot-toast';
+import { useCart } from '../../hooks/useCart';
+import { Star, ShoppingBag, Eye, CheckCircle2 } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { isAuthenticated } = useAuth();
-  const { addItem } = useCart(); // 2. Extract addItem from hook
+  const { addItem } = useCart();
+  const [isHovered, setIsHovered] = useState(false);
 
-  const hasDiscount = product.discountPrice && product.discountPrice < product.price;
-  const discountPercent = hasDiscount 
-    ? Math.round(((product.price - product.discountPrice!) / product.price) * 100)
+  // Secondary hover image fallback
+  const primaryImage = product.thumbnail || product.images?.[0];
+  const secondaryImage = product.images?.[1] || primaryImage;
+
+  const discountPercent = product.discountPrice
+    ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
     : 0;
 
-  // 3. Connect real cart dispatch action
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    addItem(product);
-    toast.success(`Added ${product.title} to cart!`);
-  };
-
-  const toggleWishlist = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!isAuthenticated) {
-      toast.error('Please login to manage your wishlist');
-      return;
-    }
-    toast.success('Updated wishlist preference');
-  };
-
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-xl border bg-white shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
-      {/* Image Gallery and Badges Layer */}
-      <div className="relative aspect-square overflow-hidden bg-slate-100">
-        <img
-          src={product.thumbnail}
-          alt={product.title}
-          className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
-        />
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white/80 p-3 shadow-soft-xs hover:shadow-soft-md hover:border-slate-300 transition-all duration-300 backdrop-blur-md"
+    >
+      {/* Top Media & Badges */}
+      <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-slate-100">
+        
+        {/* Hover Cross-Fade Image Gallery */}
+        <Link to={`/product/${product.id}`} className="block h-full w-full">
+          <img
+            src={isHovered ? secondaryImage : primaryImage}
+            alt={product.title}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        </Link>
 
-        {hasDiscount && (
-          <span className="absolute top-3 left-3 z-10 rounded-full bg-red-500 px-2.5 py-1 text-xs font-bold text-white shadow-xs">
-            -{discountPercent}% OFF
+        {/* Discount Badge */}
+        {discountPercent > 0 && (
+          <span className="absolute top-2.5 left-2.5 rounded-lg bg-red-600 px-2 py-0.5 text-[10px] font-black text-white shadow-soft-xs">
+            -{discountPercent}%
           </span>
         )}
 
-        {product.stock === 0 ? (
-          <span className="absolute top-3 right-3 z-10 rounded bg-slate-900/80 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white backdrop-blur-xs">
-            OUT OF STOCK
-          </span>
-        ) : product.stock <= 5 ? (
-          <span className="absolute top-3 right-3 z-10 rounded bg-amber-500 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white">
-            ONLY {product.stock} LEFT
-          </span>
-        ) : null}
+        {/* Stock Status Pill */}
+        <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-extrabold text-slate-700 backdrop-blur-md border border-white/40">
+          <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+          <span>In Stock</span>
+        </span>
 
-        <button 
-          onClick={toggleWishlist}
-          className="absolute top-3 right-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white text-slate-600 shadow-xs transition-transform duration-200 hover:scale-110 hover:text-red-500 opacity-0 group-hover:opacity-100 focus:opacity-100"
-        >
-          <FaRegHeart className="h-4 w-4" />
-        </button>
-
-        <div className="absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center bg-gradient-to-t from-black/60 to-transparent p-4 transition-transform duration-300 group-hover:translate-y-0">
-          <Link 
-            to={`/product/${product.id}`}
-            className="flex items-center gap-2 rounded-md bg-white px-4 py-2 text-xs font-semibold text-slate-800 shadow-2xs transition hover:bg-slate-50"
+        {/* Slide-Up Quick Add Overlay (Desktop) */}
+        <div className="absolute inset-x-2 bottom-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
+          <button
+            onClick={() => addItem(product)}
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-slate-900 py-2.5 text-xs font-bold text-white shadow-soft-md hover:bg-blue-600 transition"
           >
-            <FaEye className="h-3.5 w-3.5" /> Quick View
+            <ShoppingBag className="h-3.5 w-3.5" /> Quick Add
+          </button>
+          <Link
+            to={`/product/${product.id}`}
+            className="flex h-9 w-9 items-center justify-center rounded-xl bg-white p-2 text-slate-700 shadow-soft-md hover:bg-slate-100 transition"
+            title="Quick View"
+          >
+            <Eye className="h-4 w-4" />
           </Link>
         </div>
       </div>
 
-      {/* Meta Section */}
-      <div className="flex flex-1 flex-col p-4">
-        <h4 className="text-xs font-medium tracking-wide text-blue-600 uppercase">{product.brand}</h4>
-        <h3 className="mt-1 text-sm font-semibold text-slate-800 line-clamp-2 min-h-[40px]">
-          <Link to={`/product/${product.id}`} className="hover:text-blue-600">
+      {/* Product Details */}
+      <div className="mt-3.5 space-y-2 px-1">
+        <div className="flex items-center justify-between text-[11px]">
+          <span className="font-extrabold uppercase tracking-wider text-blue-600">{product.brand}</span>
+          <div className="flex items-center gap-1 text-amber-500 font-bold">
+            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+            <span>{product.rating || '4.8'}</span>
+            <span className="text-slate-400">({product.totalReviews || 12})</span>
+          </div>
+        </div>
+
+        <Link to={`/product/${product.id}`} className="block">
+          <h3 className="text-xs font-bold text-slate-800 line-clamp-1 group-hover:text-blue-600 transition">
             {product.title}
-          </Link>
-        </h3>
+          </h3>
+        </Link>
 
-        <div className="mt-2 flex items-center gap-1 text-xs text-amber-400">
-          <div className="flex">{'★'.repeat(Math.round(product.rating))}{'☆'.repeat(5 - Math.round(product.rating))}</div>
-          <span className="text-slate-400 font-medium">({product.totalReviews})</span>
+        {/* Price & Action */}
+        <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-sm font-black text-slate-900">
+              ${product.discountPrice ?? product.price}
+            </span>
+            {product.discountPrice && (
+              <span className="text-[11px] font-semibold text-slate-400 line-through">
+                ${product.price}
+              </span>
+            )}
+          </div>
+
+          <button
+            onClick={() => addItem(product)}
+            className="sm:hidden rounded-lg bg-slate-100 p-2 text-slate-700 hover:bg-blue-600 hover:text-white transition"
+          >
+            <ShoppingBag className="h-3.5 w-3.5" />
+          </button>
         </div>
-
-        <div className="mt-4 flex items-baseline gap-2">
-          {hasDiscount ? (
-            <>
-              <span className="text-lg font-bold text-slate-900">₹{product.discountPrice}</span>
-              <span className="text-xs text-slate-400 line-through">₹{product.price}</span>
-            </>
-          ) : (
-            <span className="text-lg font-bold text-slate-900">₹{product.price}</span>
-          )}
-        </div>
-
-        <button
-          onClick={handleAddToCart}
-          disabled={product.stock === 0}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 py-2.5 text-xs font-semibold text-white transition-all hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
-        >
-          <FaShoppingCart className="h-3.5 w-3.5" /> Add To Cart
-        </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
