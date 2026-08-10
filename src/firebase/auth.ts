@@ -1,5 +1,5 @@
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, 
-  signOut, GoogleAuthProvider, signInWithPopup
+  signOut, GoogleAuthProvider,
 } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { auth, db } from './firebaseConfig';

@@ -1,61 +1,28 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { productService } from '../services/productService';
-import { 
-  fetchStart, fetchProductsSuccess, fetchCategoriesSuccess, 
-  fetchFeaturedSuccess, fetchProductByIdSuccess, fetchFailure 
-} from '../redux/slices/productSlice';
-import type { RootState } from '../app/store';
+import type { Product } from '../types/product.types';
 
-export const useProducts = () => {
-  const dispatch = useDispatch();
-  const state = useSelector((state: RootState) => state.products);
+export const useProducts = (category?: string) => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const loadCatalog = useCallback(async () => {
-    dispatch(fetchStart());
+  const fetchProducts = async () => {
     try {
-      const data = await productService.getProducts(state.filters, state.sortOption, state.searchQuery);
-      dispatch(fetchProductsSuccess(data));
+      setLoading(true);
+      const data = await productService.getProducts(category ? { category } : undefined);
+      setProducts(data);
     } catch (err: any) {
-      dispatch(fetchFailure(err.message || 'Failed to fetch catalog products.'));
+      console.error('Error fetching products:', err);
+      setError(err.message || 'Failed to load products');
+    } finally {
+      setLoading(false);
     }
-  }, [dispatch, state.filters, state.sortOption, state.searchQuery]);
-
-  const loadCategories = useCallback(async () => {
-    dispatch(fetchStart());
-    try {
-      const data = await productService.getCategories();
-      dispatch(fetchCategoriesSuccess(data));
-    } catch (err: any) {
-      dispatch(fetchFailure(err.message));
-    }
-  }, [dispatch]);
-
-  const loadFeatured = useCallback(async () => {
-    dispatch(fetchStart());
-    try {
-      const data = await productService.getFeaturedProducts();
-      dispatch(fetchFeaturedSuccess(data));
-    } catch (err: any) {
-      dispatch(fetchFailure(err.message));
-    }
-  }, [dispatch]);
-
-  const loadProductDetails = useCallback(async (id: string) => {
-    dispatch(fetchStart());
-    try {
-      const data = await productService.getProductById(id);
-      dispatch(fetchProductByIdSuccess(data));
-    } catch (err: any) {
-      dispatch(fetchFailure(err.message));
-    }
-  }, [dispatch]);
-
-  return {
-    ...state,
-    loadCatalog,
-    loadCategories,
-    loadFeatured,
-    loadProductDetails
   };
+
+  useEffect(() => {
+    fetchProducts();
+  }, [category]);
+
+  return { products, loading, error, refetch: fetchProducts };
 };
