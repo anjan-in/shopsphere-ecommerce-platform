@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { orderService } from '../../services/orderService';
 import type { Order } from '../../types/order.types';
-import { FaCheckCircle, FaShoppingBag } from 'react-icons/fa';
+import { CheckCircle2, ShoppingBag } from 'lucide-react';
 
 export default function OrderSuccessPage() {
   const { id } = useParams<{ id: string }>();
@@ -11,7 +11,7 @@ export default function OrderSuccessPage() {
 
   useEffect(() => {
     if (id) {
-      orderService.getOrderById(id).then((data) => {
+      orderService.getOrderById(id).then((data: Order | null) => {
         setOrder(data);
         setLoading(false);
       });
@@ -23,7 +23,7 @@ export default function OrderSuccessPage() {
   return (
     <div className="mx-auto max-w-2xl py-12 px-4 text-center space-y-6">
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
-        <FaCheckCircle className="h-10 w-10" />
+        <CheckCircle2 className="h-10 w-10" />
       </div>
 
       <div>
@@ -58,7 +58,7 @@ export default function OrderSuccessPage() {
 
       <div className="pt-4 flex justify-center gap-4">
         <Link to="/products" className="flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-xs font-bold text-white shadow-xs hover:bg-blue-700">
-          <FaShoppingBag /> Continue Shopping
+          <ShoppingBag className="h-4 w-4" /> Continue Shopping
         </Link>
       </div>
     </div>
