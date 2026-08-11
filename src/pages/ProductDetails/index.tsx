@@ -5,6 +5,7 @@ import { productService } from '../../services/productService';
 import type { Product } from '../../types/product.types';
 import { useCart } from '../../hooks/useCart';
 import toast from 'react-hot-toast';
+import ProductReviews from '../../components/review/ProductReviews';
 import { 
   Star, 
   ShoppingBag, 
@@ -376,6 +377,12 @@ export default function ProductDetailsPage() {
           )}
 
           {activeTab === 'reviews' && (
+            <>
+            <ProductReviews
+              productId={product.id}
+              fallbackRating={product.rating}
+              fallbackTotalReviews={product.totalReviews}
+            />
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -411,11 +418,10 @@ export default function ProductDetailsPage() {
                 </p>
               </div>
             </div>
+            </>
           )}
         </div>
-
       </section>
-
     </div>
   );
 }
