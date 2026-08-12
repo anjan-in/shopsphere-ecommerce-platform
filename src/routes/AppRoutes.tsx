@@ -16,6 +16,7 @@ import ProfilePage from '../pages/Profile/index';
 import OrderHistoryPage from '../pages/Orders/index';
 import AdminDashboard from '../pages/Admin/Dashboard/index';
 import ManageProductsPage from '../pages/Admin/ManageProducts/index';
+import WishlistPage from '../pages/Wishlist';
 
 const router = createBrowserRouter([
   {
@@ -66,6 +67,10 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ) 
       },
+      { 
+        path: 'wishlist', 
+        element: <WishlistPage /> 
+      }
     ],
   },
   {
