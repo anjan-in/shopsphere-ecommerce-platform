@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Product } from '../../types/product.types';
 import { useCart } from '../../hooks/useCart';
-import { Star, ShoppingBag, Eye, CheckCircle2 } from 'lucide-react';
+import { useWishlist } from '../../hooks/useWishlist';
+import toast from 'react-hot-toast';
+import { Star, ShoppingBag, Eye, CheckCircle2, Heart } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -11,15 +13,23 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
   const [isHovered, setIsHovered] = useState(false);
 
-  // Secondary hover image fallback
+  const isSaved = isInWishlist(product.id);
   const primaryImage = product.thumbnail || product.images?.[0];
   const secondaryImage = product.images?.[1] || primaryImage;
 
   const discountPercent = product.discountPrice
     ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
     : 0;
+
+  const handleWishlistClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishlist(product);
+    toast.success(isSaved ? 'Removed from Wishlist' : 'Saved to Wishlist');
+  };
 
   return (
     <motion.div
@@ -30,10 +40,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       onMouseLeave={() => setIsHovered(false)}
       className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white/80 p-3 shadow-soft-xs hover:shadow-soft-md hover:border-slate-300 transition-all duration-300 backdrop-blur-md"
     >
-      {/* Top Media & Badges */}
       <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-slate-100">
-        
-        {/* Hover Cross-Fade Image Gallery */}
         <Link to={`/product/${product.id}`} className="block h-full w-full">
           <img
             src={isHovered ? secondaryImage : primaryImage}
@@ -42,20 +49,29 @@ export default function ProductCard({ product }: ProductCardProps) {
           />
         </Link>
 
-        {/* Discount Badge */}
+        {/* Wishlist Heart Button */}
+        <button
+          onClick={handleWishlistClick}
+          className={`absolute top-2.5 left-2.5 z-10 flex h-8 w-8 items-center justify-center rounded-xl bg-white/90 p-2 shadow-soft-xs backdrop-blur-md transition ${
+            isSaved ? 'text-red-500' : 'text-slate-500 hover:text-red-500'
+          }`}
+          title={isSaved ? 'Remove from Wishlist' : 'Save to Wishlist'}
+        >
+          <Heart className={`h-4 w-4 ${isSaved ? 'fill-red-500' : ''}`} />
+        </button>
+
         {discountPercent > 0 && (
-          <span className="absolute top-2.5 left-2.5 rounded-lg bg-red-600 px-2 py-0.5 text-[10px] font-black text-white shadow-soft-xs">
+          <span className="absolute bottom-2.5 left-2.5 rounded-lg bg-red-600 px-2 py-0.5 text-[10px] font-black text-white shadow-soft-xs">
             -{discountPercent}%
           </span>
         )}
 
-        {/* Stock Status Pill */}
         <span className="absolute top-2.5 right-2.5 flex items-center gap-1 rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-extrabold text-slate-700 backdrop-blur-md border border-white/40">
           <CheckCircle2 className="h-3 w-3 text-emerald-500" />
           <span>In Stock</span>
         </span>
 
-        {/* Slide-Up Quick Add Overlay (Desktop) */}
+        {/* Hover Action Overlay */}
         <div className="absolute inset-x-2 bottom-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
           <button
             onClick={() => addItem(product)}
@@ -73,7 +89,6 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
 
-      {/* Product Details */}
       <div className="mt-3.5 space-y-2 px-1">
         <div className="flex items-center justify-between text-[11px]">
           <span className="font-extrabold uppercase tracking-wider text-blue-600">{product.brand}</span>
@@ -90,7 +105,6 @@ export default function ProductCard({ product }: ProductCardProps) {
           </h3>
         </Link>
 
-        {/* Price & Action */}
         <div className="flex items-center justify-between pt-1 border-t border-slate-100">
           <div className="flex items-baseline gap-1.5">
             <span className="text-sm font-black text-slate-900">
