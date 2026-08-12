@@ -3,14 +3,16 @@ import { Outlet, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
+import { useWishlist } from '../hooks/useWishlist';
 import CartDrawer from '../components/cart/CartDrawer';
 import SearchModal from '../components/search/SearchModal';
-import { ShoppingBag, User, Package, Search } from 'lucide-react';
+import { ShoppingBag, User, Package, Heart, Search } from 'lucide-react';
 
 export default function MainLayout() {
   const { summary, toggleDrawer } = useCart();
   const { user, isAuthenticated } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { wishlistCount } = useWishlist();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -62,6 +64,19 @@ export default function MainLayout() {
               <span>Search products...</span>
               <kbd className="ml-auto rounded bg-slate-200/60 px-1.5 py-0.5 text-[10px] font-bold text-slate-500">⌘K</kbd>
             </button>
+
+            <Link
+              to="/wishlist"
+              className="relative rounded-xl border border-slate-200/80 bg-white/80 p-2.5 text-slate-700 shadow-soft-xs hover:border-red-200 hover:text-red-500 hover:shadow-soft-md transition"
+              title="Saved Wishlist"
+            >
+              <Heart className="h-4 w-4" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-[10px] font-extrabold text-white shadow-soft-xs">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
 
             {/* Cart Trigger */}
             <button 
