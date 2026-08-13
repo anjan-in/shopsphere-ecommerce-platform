@@ -1,70 +1,121 @@
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { FaEnvelope, FaPhone, FaShieldAlt, FaSignOutAlt } from 'react-icons/fa';
+import { useWishlist } from '../../hooks/useWishlist';
+import toast from 'react-hot-toast';
+import { 
+  User, 
+  Mail, 
+  Shield, 
+  Package, 
+  Heart, 
+  LogOut, 
+  Sparkles, 
+  ChevronRight,
+  Clock
+} from 'lucide-react';
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { wishlistCount } = useWishlist();
 
-  if (!user) return null;
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success('Signed out successfully');
+      navigate('/login');
+    } catch (err: any) {
+      toast.error('Failed to log out: ' + err.message);
+    }
+  };
 
   return (
-    <div className="mx-auto max-w-3xl py-8 space-y-6">
-      <div className="rounded-2xl border bg-white p-6 shadow-2xs space-y-6">
-        
-        {/* Header Profile Card */}
-        <div className="flex items-center gap-4 border-b pb-6">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-blue-600 font-bold text-2xl">
-            {user.profileImage ? (
-              <img src={user.profileImage} alt={user.fullName} className="h-full w-full rounded-full object-cover" />
-            ) : (
-              user.fullName?.charAt(0).toUpperCase() || 'U'
-            )}
+    <div className="space-y-8 pb-16 max-w-4xl mx-auto">
+      
+      {/* Profile Header Banner */}
+      <div className="glass-panel rounded-3xl p-8 shadow-soft-xs border border-slate-200/80 space-y-6">
+        <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
+          
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-primary-gradient text-white text-2xl font-black shadow-soft-md">
+            {user?.fullName?.charAt(0) || <User className="h-8 w-8" />}
           </div>
-          <div>
-            <h1 className="text-xl font-extrabold text-slate-900">{user.fullName}</h1>
-            <span className="inline-block mt-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] font-bold text-blue-600 uppercase tracking-wider">
-              {user.role} Account
-            </span>
-          </div>
-        </div>
 
-        {/* User Details Grid */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 text-xs">
-          <div className="flex items-center gap-3 rounded-xl border p-3.5 bg-slate-50/50">
-            <FaEnvelope className="h-4 w-4 text-slate-400" />
-            <div>
-              <p className="text-[10px] text-slate-400 uppercase font-semibold">Email Address</p>
-              <p className="font-bold text-slate-800">{user.email}</p>
+          <div className="space-y-1.5 flex-1">
+            <div className="flex items-center justify-center sm:justify-start gap-2">
+              <h1 className="text-2xl font-black text-slate-900">{user?.fullName || 'ShopSphere Member'}</h1>
+              <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-black uppercase text-blue-700 flex items-center gap-1">
+                <Sparkles className="h-3 w-3" /> VIP
+              </span>
             </div>
+            <p className="text-xs text-slate-400 flex items-center justify-center sm:justify-start gap-1.5 font-medium">
+              <Mail className="h-3.5 w-3.5 text-slate-400" /> {user?.email}
+            </p>
           </div>
 
-          <div className="flex items-center gap-3 rounded-xl border p-3.5 bg-slate-50/50">
-            <FaPhone className="h-4 w-4 text-slate-400" />
-            <div>
-              <p className="text-[10px] text-slate-400 uppercase font-semibold">Phone Number</p>
-              <p className="font-bold text-slate-800">{user.phone || 'Not provided'}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 rounded-xl border p-3.5 bg-slate-50/50 sm:col-span-2">
-            <FaShieldAlt className="h-4 w-4 text-slate-400" />
-            <div>
-              <p className="text-[10px] text-slate-400 uppercase font-semibold">Account Identifier</p>
-              <p className="font-mono text-slate-700 font-semibold">{user.uid}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Account Actions */}
-        <div className="pt-4 border-t flex justify-end">
           <button
-            onClick={logout}
-            className="flex items-center gap-2 rounded-xl bg-red-50 px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-100 transition"
+            onClick={handleLogout}
+            className="flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition"
           >
-            <FaSignOutAlt /> Sign Out
+            <LogOut className="h-4 w-4" /> Sign Out
           </button>
         </div>
-
       </div>
+
+      {/* Quick Access Dashboard Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Link
+          to="/orders"
+          className="glass-panel flex items-center justify-between rounded-2xl p-5 shadow-soft-xs hover:shadow-soft-md hover:border-blue-200 transition group"
+        >
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+              <Package className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition">My Orders</h3>
+              <p className="text-[11px] text-slate-400">Track shipments & past purchases</p>
+            </div>
+          </div>
+          <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-blue-600 transition" />
+        </Link>
+
+        <Link
+          to="/wishlist"
+          className="glass-panel flex items-center justify-between rounded-2xl p-5 shadow-soft-xs hover:shadow-soft-md hover:border-red-200 transition group"
+        >
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-red-500">
+              <Heart className="h-6 w-6 fill-red-500" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 group-hover:text-red-500 transition">Saved Wishlist</h3>
+              <p className="text-[11px] text-slate-400">{wishlistCount} item{wishlistCount === 1 ? '' : 's'} saved</p>
+            </div>
+          </div>
+          <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-red-500 transition" />
+        </Link>
+      </div>
+
+      {/* Security & Preferences */}
+      <div className="glass-panel rounded-3xl p-6 shadow-soft-xs space-y-4">
+        <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2 border-b pb-3">
+          <Shield className="h-4 w-4 text-emerald-600" /> Account Security
+        </h3>
+        
+        <div className="space-y-3 text-xs text-slate-600">
+          <div className="flex items-center justify-between py-1">
+            <span>Email Authentication</span>
+            <span className="font-bold text-emerald-600 flex items-center gap-1">
+              <Clock className="h-3.5 w-3.5" /> Verified
+            </span>
+          </div>
+          <div className="flex items-center justify-between py-1">
+            <span>Role Permissions</span>
+            <span className="font-bold text-slate-900 capitalize">{user?.role || 'Customer'}</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
