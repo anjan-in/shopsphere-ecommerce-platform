@@ -17,6 +17,7 @@ import OrderHistoryPage from '../pages/Orders/index';
 import AdminDashboard from '../pages/Admin/Dashboard/index';
 import ManageProductsPage from '../pages/Admin/ManageProducts/index';
 import WishlistPage from '../pages/Wishlist';
+import OrdersPage from '../pages/Orders';
 
 const router = createBrowserRouter([
   {
@@ -70,7 +71,15 @@ const router = createBrowserRouter([
       { 
         path: 'wishlist', 
         element: <WishlistPage /> 
-      }
+      },
+      {
+        path: 'orders',
+        element: <OrdersPage />,
+      },
+      // {
+      //   path: 'profile',
+      //   element: <ProfilePage />,
+      // }
     ],
   },
   {
